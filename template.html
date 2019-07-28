@@ -4,6 +4,14 @@
     <title>Rotating Triangle</title>
   </head>
   <body>
-    <div id="app" v-html="message"></div>
+    <div id="app" align="center">
+      <div>
+        <canvas id="triangleCanvas" width="300" height="300"></canvas>
+      </div>
+      <div>
+        <button v-on:click="switchDirection">switch direction</button>
+        <button v-on:click="switchColorSequence">switch color sequance</button>
+      </div>
+    </div>
   </body>
 </html>
