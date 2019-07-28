@@ -1,6 +1,28 @@
 import Vue from 'vue';
 import * as THREE from 'three';
 
+// create glsl shader for triangle coloring
+const fragmentShader = `
+  uniform vec3 iResolution;
+  uniform float iTime;
+
+  void mainImage( out vec4 fragColor, in vec2 fragCoord )
+  {
+      // Normalized pixel coordinates (from 0 to 1)
+      vec2 uv = fragCoord/iResolution.xy;
+
+      // Time varying pixel color
+      vec3 col = 0.5 + 0.5*cos(iTime+uv.xyx+vec3(0,2,4));
+
+      // Output to screen
+      fragColor = vec4(col,1.0);
+  }
+
+  void main() {
+    mainImage(gl_FragColor, gl_FragCoord.xy);
+  }
+  `;
+
 export default () => new Vue({
   el: '#app',
   data: { // state
@@ -27,27 +49,6 @@ export default () => new Vue({
       triangleGeometry.vertices.push(new THREE.Vector3(0.5, 0, 0));
       triangleGeometry.vertices.push(new THREE.Vector3(-0.5, 0, 0));
       triangleGeometry.faces.push(new THREE.Face3(0, 1, 2));
-      const fragmentShader = `
-      // add glsl shader for triangle coloring
-  uniform vec3 iResolution;
-  uniform float iTime;
-
-  void mainImage( out vec4 fragColor, in vec2 fragCoord )
-  {
-      // Normalized pixel coordinates (from 0 to 1)
-      vec2 uv = fragCoord/iResolution.xy;
-
-      // Time varying pixel color
-      vec3 col = 0.5 + 0.5*cos(iTime+uv.xyx+vec3(0,2,4));
-
-      // Output to screen
-      fragColor = vec4(col,1.0);
-  }
-
-  void main() {
-    mainImage(gl_FragColor, gl_FragCoord.xy);
-  }
-  `;
       const uniforms = { // contains uniform variables
         iTime: { value: 0 },
         iResolution: { value: new THREE.Vector3() },
