@@ -22,6 +22,27 @@ const fragmentShader = `
     mainImage(gl_FragColor, gl_FragCoord.xy);
   }
   `;
+const fov = 45;
+const aspect = 1;
+const near = 1;
+const far = 100;
+const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+camera.position.set(0, 0.5, 2); // as x,y,z coordinates accordingly
+const triangleGeometry = new THREE.Geometry();
+triangleGeometry.vertices.push(new THREE.Vector3(0, 1, 0));
+triangleGeometry.vertices.push(new THREE.Vector3(0.5, 0, 0));
+triangleGeometry.vertices.push(new THREE.Vector3(-0.5, 0, 0));
+triangleGeometry.faces.push(new THREE.Face3(0, 1, 2));
+const uniforms = { // contains uniform variables
+  iTime: { value: 0 },
+  iResolution: { value: new THREE.Vector3() },
+};
+const material = new THREE.ShaderMaterial({
+  fragmentShader,
+  uniforms,
+  side: THREE.DoubleSide,
+});
+const triangle = new THREE.Mesh(triangleGeometry, material);
 
 export default () => new Vue({
   el: '#app',
@@ -33,32 +54,11 @@ export default () => new Vue({
     this.runWebGL();
   },
   methods: {
-    runWebGL() {
+    runWebGL() { // called after the instance has been mounted
       const canvas = document.querySelector('#triangleCanvas');
       const renderer = new THREE.WebGLRenderer({ canvas }); // init WebGL context
       renderer.setClearColor(0xffffff, 1); // set background color (white)
-      const fov = 45;
-      const aspect = 1;
-      const near = 1;
-      const far = 100;
-      const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-      camera.position.set(0, 0.5, 2); // as x,y,z coordinates accordingly
       const scene = new THREE.Scene();
-      const triangleGeometry = new THREE.Geometry();
-      triangleGeometry.vertices.push(new THREE.Vector3(0, 1, 0));
-      triangleGeometry.vertices.push(new THREE.Vector3(0.5, 0, 0));
-      triangleGeometry.vertices.push(new THREE.Vector3(-0.5, 0, 0));
-      triangleGeometry.faces.push(new THREE.Face3(0, 1, 2));
-      const uniforms = { // contains uniform variables
-        iTime: { value: 0 },
-        iResolution: { value: new THREE.Vector3() },
-      };
-      const material = new THREE.ShaderMaterial({
-        fragmentShader,
-        uniforms,
-        side: THREE.DoubleSide,
-      });
-      const triangle = new THREE.Mesh(triangleGeometry, material);
       scene.add(triangle);
       const render = () => {
         // increase for speed up
